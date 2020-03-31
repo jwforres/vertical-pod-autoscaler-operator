@@ -1,0 +1,82 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: vpa-operator-registry
+  namespace: openshift-vertical-pod-autoscaler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      registry.operator.vpa: 'true'
+  template:
+    metadata:
+      name: vpa-operator-registry
+      creationTimestamp: null
+      labels:
+        registry.operator.vpa: 'true'
+    spec:
+      containers:
+        - resources:
+            requests:
+              cpu: 10m
+              memory: 100Mi
+          readinessProbe:
+            exec:
+              command:
+                - grpc_health_probe
+                - '-addr=localhost:50051'
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          terminationMessagePath: /dev/termination-log
+          name: vpa-operator-registry
+          command:
+            - /usr/bin/registry-server
+            - '--database=bundles.db'
+          livenessProbe:
+            exec:
+              command:
+                - grpc_health_probe
+                - '-addr=localhost:50051'
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          ports:
+            - name: grpc
+              containerPort: 50051
+              protocol: TCP
+          imagePullPolicy: Always
+          terminationMessagePolicy: File
+          image: >-
+            image-registry.openshift-image-registry.svc:5000/openshift-vertical-pod-autoscaler/vpa-operator-registry:latest
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: vpa-operator-registry
+  namespace: openshift-vertical-pod-autoscaler
+spec:
+  ports:
+    - name: grpc
+      protocol: TCP
+      port: 50051
+      targetPort: 50051
+  selector:
+    registry.operator.vpa: 'true'
+  type: ClusterIP
+  sessionAffinity: None

@@ -1,0 +1,8 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: vpa-catalog
+  namespace: openshift-vertical-pod-autoscaler
+spec:
+  address: 'CLUSTER_IP_GOES_HERE:50051'
+  sourceType: grpc

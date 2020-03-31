@@ -17,7 +17,7 @@ metadata:
       ]
     categories: OpenShift Optional
     certifiedLevel: Primed
-    containerImage: quay.io/openshift/vertical-pod-autoscaler-operator:4.4
+    containerImage: image-registry.openshift-image-registry.svc:5000/openshift-vertical-pod-autoscaler/vertical-pod-autoscaler-operator:latest
     createdAt: 2019/10/14
     description: An operator to run the OpenShift Vertical Pod Autoscaler. Vertical Pod Autoscaler (VPA) can be configured to monitor a workload's resource utilization, and then adjust its CPU and memory limits by updating the pod (future) or restarting the pod with updated limits.
     healthIndex: B
@@ -374,7 +374,7 @@ spec:
               serviceAccountName: vertical-pod-autoscaler-operator
               containers:
               - name: vertical-pod-autoscaler-operator
-                image: quay.io/openshift/vertical-pod-autoscaler-operator:4.4
+                image: image-registry.openshift-image-registry.svc:5000/openshift-vertical-pod-autoscaler/vertical-pod-autoscaler-operator:latest
                 command:
                 - vertical-pod-autoscaler-operator
                 args:
@@ -391,7 +391,7 @@ spec:
                     fieldRef:
                       fieldPath: metadata.namespace
                 - name: VERTICAL_POD_AUTOSCALER_IMAGE
-                  value: quay.io/openshift/vertical-pod-autoscaler:4.4
+                  value: image-registry.openshift-image-registry.svc:5000/openshift-vertical-pod-autoscaler/vertical-pod-autoscaler:latest
                 ports:
                 - containerPort: 8443
                 resources:
